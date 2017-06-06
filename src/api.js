@@ -1,8 +1,12 @@
 var http = require('http');
 
 this.server = http.createServer(function (req, res) {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Hello, world!\n');
+  analysis = {
+    images: []
+  }
+  body = JSON.stringify(analysis)
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(body);
 });
 
 exports.listen = function () {
