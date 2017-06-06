@@ -17,6 +17,9 @@
     "url": "https://github.com/natb1/faceornot/issues"
   },
   "homepage": "https://github.com/natb1/faceornot#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.1"
+  },
   "devDependencies": {
     "chai": "^4.0.2",
     "mocha": "^3.4.2"

@@ -3,7 +3,8 @@
 ## spec
 - takes a GET request to `/` with a query parameter `url` (which must be url
   encoded)
-- returns a json body that looks like:
+- makes a GET request to the provided `url`
+- parses images and returns a json body that looks like:
 ```
 {
   "images": [
@@ -14,6 +15,14 @@
   ]
 }
 ```
+
+## limitations
+- We are only parsing the static body of an HTTP request. A headless browser
+  such as phantomjs could be used to render and parse dynamic content.
+- We respond to requests synchronously which is not ideal from a systems
+  perspective. Alternatively, we could drop the request on a queue and
+  analyze the content asynchronously.
+
 ## build
 ```
 docker build -t faceornot .
