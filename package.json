@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/natb1/faceornot#readme",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.1"
+    "cheerio": "^1.0.0-rc.1",
+    "faced": "^1.2.0",
+    "async":"^2.4.1"
   },
   "devDependencies": {
     "chai": "^4.0.2",

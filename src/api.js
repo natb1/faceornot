@@ -2,7 +2,9 @@ var http = require('http');
 var https = require('https');
 var url = require('url');
 
-cheerio = require('cheerio')
+var cheerio = require('cheerio')
+var Faced = require('faced')
+var async = require('async')
 
 this.server = http.createServer(function (req, res) {
   qurl = parseURL(req.url)
@@ -44,17 +46,42 @@ handleQres = function(qres, origin, res) {
     body += chunk
   })
   qres.on('end', function() {
-    images = parseImages(body, origin)
-    analysis = {
-      images: images.map((img) => {
-        return { url: img.href, isFace: false }
-      })
-    }
-    body = JSON.stringify(analysis)
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(body);
+    imageUrls = parseImages(body, origin)
+    async.map(imageUrls, analyzeImage, (err, images) => {
+      if (err !== null) {
+        res.writeHead(500, { 'Content-Type': 'application/text' })
+        res.end('failed to analyze images')
+        console.log(err)
+        return
+      }
+      analysis = { images: images.filter((img) => { return img !== null}) }
+      body = JSON.stringify(analysis, null, 2)
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(body);
+    })
   })
 }
+
+analyzeImage = function(imageUrl, done) {
+  err = requestQurl(imageUrl, (ires) => {
+    data = []
+    ires.on('data', function(chunk) {
+      data.push(chunk)
+    })
+    ires.on('end', function() {
+      buffer = Buffer.concat(data)
+      faced = new Faced();
+      faced.detect(buffer, (faces, image, file) => {
+        done(null, {url: imageUrl.href, isFace: faces.length > 0})
+      })
+    })
+  })
+  if (err !== undefined) {
+    // ignore the http error
+    done(null, null)
+  }
+}
+exports.analyzeImage = analyzeImage
 
 parseImages = function(body, base) {
   $ = cheerio.load(body)
